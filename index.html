@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ことばの橋</title>
+  <style>
+    :root{
+      --bg:#f7f5ef;
+      --card:#fffdf8;
+      --ink:#2e3436;
+      --muted:#6d7477;
+      --line:#ddd8cc;
+      --accent:#6f8f7b;
+      --accent-dark:#536f5d;
+      --soft:#e9f0eb;
+      --shadow:0 10px 30px rgba(40,55,45,.08);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI","Hiragino Kaku Gothic ProN",
+        "Yu Gothic",Meiryo,sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, #eef4ee 0, transparent 32%),
+        radial-gradient(circle at 100% 20%, #f5ece8 0, transparent 34%),
+        var(--bg);
+      color:var(--ink);
+    }
+    .wrap{
+      width:min(1050px,calc(100% - 32px));
+      margin:0 auto;
+      padding:48px 0 72px;
+    }
+    header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    .eyebrow{
+      letter-spacing:.14em;
+      font-size:.78rem;
+      color:var(--accent-dark);
+      font-weight:700;
+    }
+    h1{
+      font-size:clamp(2rem,5vw,4rem);
+      margin:8px 0 10px;
+      font-weight:800;
+      letter-spacing:.03em;
+    }
+    .lead{
+      max-width:680px;
+      margin:0 auto;
+      color:var(--muted);
+      line-height:1.9;
+    }
+    .panel{
+      background:rgba(255,253,248,.9);
+      border:1px solid rgba(221,216,204,.85);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:24px;
+      margin-top:22px;
+      backdrop-filter:blur(8px);
+    }
+    .step-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      margin-bottom:14px;
+    }
+    .num{
+      width:30px;height:30px;border-radius:999px;
+      display:grid;place-items:center;
+      background:var(--accent);color:white;
+      font-size:.85rem;
+      flex:0 0 auto;
+    }
+    label{
+      display:block;
+      font-size:.92rem;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    select, textarea, input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      color:var(--ink);
+      font:inherit;
+      padding:13px 14px;
+      outline:none;
+      transition:.2s;
+    }
+    textarea{
+      min-height:120px;
+      resize:vertical;
+      line-height:1.7;
+    }
+    select:focus, textarea:focus, input:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 4px rgba(111,143,123,.12);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:9px;
+    }
+    .chip input{display:none}
+    .chip span{
+      display:inline-block;
+      border:1px solid var(--line);
+      background:white;
+      border-radius:999px;
+      padding:9px 13px;
+      cursor:pointer;
+      transition:.2s;
+      user-select:none;
+      font-size:.92rem;
+    }
+    .chip input:checked + span{
+      background:var(--soft);
+      border-color:var(--accent);
+      color:var(--accent-dark);
+      font-weight:700;
+    }
+    .helper{
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.6;
+      margin-top:8px;
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:10px;
+      margin-top:22px;
+    }
+    button{
+      border:0;
+      font:inherit;
+      border-radius:999px;
+      padding:12px 18px;
+      cursor:pointer;
+      transition:.18s;
+    }
+    button:hover{transform:translateY(-1px)}
+    .primary{
+      color:white;
+      background:var(--accent);
+      font-weight:800;
+      min-width:190px;
+      box-shadow:0 8px 18px rgba(111,143,123,.22);
+    }
+    .primary:hover{background:var(--accent-dark)}
+    .secondary{
+      color:var(--ink);
+      background:#f1efe9;
+    }
+    .results{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+      margin-top:18px;
+    }
+    .result-card{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:18px;
+      padding:18px;
+      min-width:0;
+    }
+    .result-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:10px;
+    }
+    .tone{
+      font-weight:800;
+    }
+    .tag{
+      font-size:.75rem;
+      background:var(--soft);
+      color:var(--accent-dark);
+      padding:5px 8px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .result-card textarea{
+      min-height:210px;
+      background:#fffdfb;
+    }
+    .copy{
+      width:100%;
+      margin-top:10px;
+      background:#f2f5f2;
+      color:var(--accent-dark);
+      font-weight:700;
+    }
+    .notice{
+      text-align:center;
+      color:var(--muted);
+      font-size:.8rem;
+      line-height:1.7;
+      margin-top:22px;
+    }
+    .hidden{display:none}
+    footer{
+      text-align:center;
+      margin-top:30px;
+      color:#8a8f91;
+      font-size:.78rem;
+    }
+    @media(max-width:820px){
+      .results{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
+      .wrap{padding-top:28px}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="eyebrow">KOTOBA BRIDGE</div>
+      <h1>ことばの橋</h1>
+      <p class="lead">
+        断りたい。謝りたい。お願いしたい。少し距離を置きたい。<br>
+        言いにくいことを、相手との関係に合った伝え方に整えます。
+      </p>
+    </header>
+
+    <section class="panel">
+      <div class="step-title"><span class="num">1</span>どんなことを伝えたいですか？</div>
+      <div class="grid">
+        <div>
+          <label for="scene">場面</label>
+          <select id="scene">
+            <option value="decline">誘い・依頼を断りたい</option>
+            <option value="request">お願い・頼みごとをしたい</option>
+            <option value="apology">謝りたい</option>
+            <option value="distance">少し距離を置きたい</option>
+          </select>
+        </div>
+        <div>
+          <label for="relation">相手との関係</label>
+          <select id="relation">
+            <option value="friend">友人</option>
+            <option value="family">家族</option>
+            <option value="teacher">先生・目上の人</option>
+            <option value="work">職場・仕事関係</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <label for="detail">伝えたい内容</label>
+        <textarea id="detail" placeholder="例：今週末に遊びに誘われたけれど、疲れているので今回は断りたい。関係を悪くしたくない。"></textarea>
+        <div class="helper">できるだけ具体的に書くと、自然な文章に整えやすくなります。</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="step-title"><span class="num">2</span>絵文字・顔文字はどうしますか？</div>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="emojiMode" value="auto" checked><span>おまかせ</span></label>
+        <label class="chip"><input type="radio" name="emojiMode" value="none"><span>なし</span></label>
+        <label class="chip"><input type="radio" name="emojiMode" value="custom"><span>指定する</span></label>
+      </div>
+      <div id="emojiCustomWrap" class="hidden" style="margin-top:14px">
+        <label for="emojiCustom">使いたい絵文字・顔文字</label>
+        <input id="emojiCustom" placeholder="例：🙏　😊　🙇　(>_<)" />
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="generateBtn">3つの案をつくる</button>
+        <button class="secondary" id="clearBtn">クリア</button>
+      </div>
+    </section>
+
+    <section class="panel hidden" id="resultPanel">
+      <div class="step-title"><span class="num">3</span>伝え方を選んで、必要なら編集してください</div>
+      <div class="results">
+        <article class="result-card">
+          <div class="result-head">
+            <div class="tone">やわらかめ</div>
+            <span class="tag">親しみ重視</span>
+          </div>
+          <textarea id="outSoft"></textarea>
+          <button class="copy" data-target="outSoft">コピー</button>
+        </article>
+        <article class="result-card">
+          <div class="result-head">
+            <div class="tone">バランス</div>
+            <span class="tag">おすすめ</span>
+          </div>
+          <textarea id="outBalanced"></textarea>
+          <button class="copy" data-target="outBalanced">コピー</button>
+        </article>
+        <article class="result-card">
+          <div class="result-head">
+            <div class="tone">丁寧め</div>
+            <span class="tag">配慮重視</span>
+          </div>
+          <textarea id="outPolite"></textarea>
+          <button class="copy" data-target="outPolite">コピー</button>
+        </article>
+      </div>
+    </section>
+
+    <p class="notice">
+      このページは入力内容を保存せず、外部にも送信しません。<br>
+      文章の生成は、このページ内のテンプレートを使ってブラウザ上で行います。
+    </p>
+
+    <footer>ことばの橋 — 言いにくいことを、伝わることばへ。</footer>
+  </main>
+
+  <script>
+    const scene = document.getElementById("scene");
+    const relation = document.getElementById("relation");
+    const detail = document.getElementById("detail");
+    const resultPanel = document.getElementById("resultPanel");
+    const emojiCustomWrap = document.getElementById("emojiCustomWrap");
+    const emojiCustom = document.getElementById("emojiCustom");
+
+    document.querySelectorAll('input[name="emojiMode"]').forEach(radio => {
+      radio.addEventListener("change", () => {
+        emojiCustomWrap.classList.toggle("hidden", radioValue() !== "custom");
+      });
+    });
+
+    function radioValue(){
+      return document.querySelector('input[name="emojiMode"]:checked').value;
+    }
+
+    const endings = {
+      friend: {
+        soft: "急でごめんね。",
+        balanced: "わかってもらえたらうれしいです。",
+        polite: "勝手を言ってごめんなさい。よろしくお願いします。"
+      },
+      family: {
+        soft: "またちゃんと話そう。",
+        balanced: "わかってもらえるとうれしいです。",
+        polite: "少しだけ理解してもらえると助かります。"
+      },
+      teacher: {
+        soft: "お手数をおかけしますが、よろしくお願いします。",
+        balanced: "ご理解いただけますと幸いです。",
+        polite: "恐れ入りますが、ご理解のほどよろしくお願いいたします。"
+      },
+      work: {
+        soft: "お手数をおかけしますが、よろしくお願いいたします。",
+        balanced: "ご理解いただけますと幸いです。",
+        polite: "何卒ご理解賜りますよう、よろしくお願い申し上げます。"
+      }
+    };
+
+    const templates = {
+      decline: {
+        friend: [
+          "誘ってくれてありがとう！{detail} 今回はごめん。また別の機会にぜひ。",
+          "誘ってくれてありがとう。{detail} せっかく声をかけてもらったんだけど、今回は見送らせてください。",
+          "声をかけてくれてありがとう。{detail} 申し訳ないのですが、今回はお断りさせてください。"
+        ],
+        family: [
+          "誘ってくれてありがとう。{detail} 今回はちょっとやめておくね。",
+          "ありがとう。{detail} 今回は参加しないことにします。",
+          "声をかけてくれてありがとう。{detail} 申し訳ないけれど、今回は遠慮させてください。"
+        ],
+        teacher: [
+          "お声がけいただきありがとうございます。{detail} 今回は難しそうです。",
+          "お声がけいただきありがとうございます。{detail} 大変申し訳ありませんが、今回は辞退させていただきます。",
+          "せっかくお声がけいただいたところ恐縮ですが、{detail} 今回は辞退させていただければと思います。"
+        ],
+        work: [
+          "お声がけありがとうございます。{detail} 今回は難しそうです。",
+          "お声がけいただきありがとうございます。{detail} 恐れ入りますが、今回は辞退させていただきます。",
+          "せっかくお声がけいただいたところ恐縮ですが、{detail} 今回は見送らせていただければと存じます。"
+        ]
+      },
+      request: {
+        friend: [
+          "ちょっとお願いがあるんだけど、{detail} もし大丈夫だったらお願いできる？",
+          "お願いしたいことがあります。{detail} 無理のない範囲で手伝ってもらえるとうれしいです。",
+          "急なお願いで申し訳ないのですが、{detail} 可能であれば力を貸してもらえると助かります。"
+        ],
+        family: [
+          "お願いがあるんだけど、{detail} できそうならお願いしたいです。",
+          "少し頼みたいことがあります。{detail} 手伝ってもらえると助かります。",
+          "急で申し訳ないけれど、{detail} 可能であればお願いしたいです。"
+        ],
+        teacher: [
+          "先生、少しお願いがあります。{detail} 可能でしょうか。",
+          "お忙しいところ失礼いたします。{detail} ご対応いただくことは可能でしょうか。",
+          "お忙しいところ大変恐縮ですが、{detail} ご検討いただけますと幸いです。"
+        ],
+        work: [
+          "お忙しいところすみません。{detail} ご対応いただくことは可能でしょうか。",
+          "お忙しいところ恐れ入ります。{detail} 可能でしたらご対応をお願いいたします。",
+          "ご多用のところ恐縮ですが、{detail} ご対応についてご検討いただけますと幸いです。"
+        ]
+      },
+      apology: {
+        friend: [
+          "本当にごめん。{detail} 嫌な思いをさせてしまったと思う。",
+          "ごめんなさい。{detail} 自分の配慮が足りなかったです。",
+          "本当に申し訳ありません。{detail} 傷つけてしまったことを反省しています。"
+        ],
+        family: [
+          "ごめん。{detail} 言い方もよくなかったと思う。",
+          "ごめんなさい。{detail} 配慮が足りませんでした。",
+          "申し訳ありません。{detail} きちんと反省しています。"
+        ],
+        teacher: [
+          "申し訳ありません。{detail} 今後気をつけます。",
+          "大変申し訳ありません。{detail} 今後同じことがないよう注意いたします。",
+          "このたびは大変申し訳ございませんでした。{detail} 今後は再発しないよう十分注意いたします。"
+        ],
+        work: [
+          "申し訳ありません。{detail} 今後気をつけます。",
+          "大変申し訳ございません。{detail} 今後このようなことがないよう注意いたします。",
+          "このたびはご迷惑をおかけし、誠に申し訳ございません。{detail} 再発防止に努めてまいります。"
+        ]
+      },
+      distance: {
+        friend: [
+          "ちょっと今、自分の時間が必要で、{detail} 少しだけ連絡を減らしたいです。",
+          "ちゃんと伝えておきたいんだけど、{detail} しばらく少し距離を置きたいと思っています。",
+          "突然こんなことを言ってごめんなさい。{detail} 今は少し距離を置く時間が必要だと感じています。"
+        ],
+        family: [
+          "今は少し一人で考える時間がほしいです。{detail}",
+          "少しだけ自分の時間を取りたいと思っています。{detail}",
+          "勝手を言って申し訳ないけれど、{detail} 今は少し距離を置いて落ち着く時間をもらいたいです。"
+        ],
+        teacher: [
+          "少し状況を整理する時間が必要です。{detail}",
+          "恐縮ですが、{detail} 少し時間をいただければと思います。",
+          "大変恐縮ですが、{detail} 一度落ち着いて整理する時間をいただけますと幸いです。"
+        ],
+        work: [
+          "少し状況を整理する時間をいただければと思います。{detail}",
+          "恐れ入りますが、{detail} 少し時間をいただけますでしょうか。",
+          "大変恐縮ですが、{detail} 一度整理するためのお時間を頂戴できれば幸いです。"
+        ]
+      }
+    };
+
+    function normalizeDetail(text){
+      const t = text.trim();
+      if(!t) return "少し事情があり、すぐに対応するのが難しいです。";
+      return /[。！？!?]$/.test(t) ? t : t + "。";
+    }
+
+    function emojiFor(sceneKey, relationKey, tone){
+      const mode = radioValue();
+      if(mode === "none") return "";
+      if(mode === "custom"){
+        const custom = emojiCustom.value.trim();
+        return custom ? " " + custom : "";
+      }
+      const formal = ["teacher","work"].includes(relationKey);
+      if(formal){
+        if(sceneKey === "apology") return tone === "soft" ? " 🙇" : "";
+        if(sceneKey === "request") return tone === "soft" ? " 🙏" : "";
+        return "";
+      }
+      const map = {
+        decline:["🙏","😊",""],
+        request:["🙏","🙏",""],
+        apology:["🙏","🙇",""],
+        distance:["😌","",""]
+      };
+      return " " + map[sceneKey][tone === "soft" ? 0 : tone === "balanced" ? 1 : 2];
+    }
+
+    function buildMessage(sceneKey, relationKey, toneIndex){
+      const toneName = ["soft","balanced","polite"][toneIndex];
+      const source = templates[sceneKey][relationKey][toneIndex];
+      const body = source.replace("{detail}", normalizeDetail(detail.value));
+      const close = endings[relationKey][toneName];
+      return `${body} ${close}${emojiFor(sceneKey, relationKey, toneName)}`.replace(/\s+/g," ").trim();
+    }
+
+    document.getElementById("generateBtn").addEventListener("click", () => {
+      const s = scene.value;
+      const r = relation.value;
+      document.getElementById("outSoft").value = buildMessage(s,r,0);
+      document.getElementById("outBalanced").value = buildMessage(s,r,1);
+      document.getElementById("outPolite").value = buildMessage(s,r,2);
+      resultPanel.classList.remove("hidden");
+      resultPanel.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      detail.value = "";
+      emojiCustom.value = "";
+      document.querySelector('input[name="emojiMode"][value="auto"]').checked = true;
+      emojiCustomWrap.classList.add("hidden");
+      resultPanel.classList.add("hidden");
+    });
+
+    document.querySelectorAll(".copy").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const el = document.getElementById(btn.dataset.target);
+        try{
+          await navigator.clipboard.writeText(el.value);
+          const old = btn.textContent;
+          btn.textContent = "コピーしました";
+          setTimeout(()=>btn.textContent = old, 1300);
+        }catch{
+          el.select();
+          document.execCommand("copy");
+          btn.textContent = "コピーしました";
+          setTimeout(()=>btn.textContent = "コピー", 1300);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
